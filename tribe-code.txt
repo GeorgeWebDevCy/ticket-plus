@@ -1,0 +1,51 @@
+add_action( 'woocommerce_cart_calculate_fees', 'add_custom_fee_based_on_attendee_info', 10, 1 );
+function add_custom_fee_based_on_attendee_info( $cart ) {
+global $woocommerce;
+// Loop through cart items
+foreach ( $woocommerce->cart->get_cart() as $cart_item_key => $cart_item ) {
+    // Debugging: log cart item to browser console
+    echo '<script>console.log('. json_encode( $cart_item ) .')</script>';
+
+    // Get event ID from cart item
+    $event_id = 7892;
+
+    // Debugging: log event ID to browser console
+    echo '<script>console.log("Event ID: '. $event_id .'");</script>';
+
+    // Get attendee info from event
+    $attendee_info = tribe_get_event_meta( $event_id, '_Attendee_Info', true );
+
+    // Check if attendee info is an array
+    if ( is_array( $attendee_info ) ) {
+
+        // Debugging: log attendee info to browser console
+        echo '<script>console.log('. json_encode( $attendee_info ) .')</script>';
+
+        // Get ticket ID for cart item
+        $product_id = $cart_item['product_id'];
+        $product_variation_id = $cart_item['variation_id'];
+        $ticket_id = Tribe__Tickets__Tickets_Handler::get_ticket_id_from_product( $product_id, $product_variation_id );
+
+        // Debugging: log ticket ID to browser console
+        echo '<script>console.log("Ticket ID: '. $ticket_id .'");</script>';
+
+        // Get attendee meta values
+        $attendee_id = tribe_tickets_plus_meta_field_get_attendee_id( $attendee_id );
+        $attendee_meta_values = Tribe__Tickets_Plus__Meta::get_attendee_meta_values( $ticket_id, $attendee_id );
+
+        // Debugging: log attendee meta values to browser console
+        echo '<script>console.log('. json_encode( $attendee_meta_values ) .')</script>';
+
+        // Get attendee name
+        $attendee_name = tribe_get_event_meta( $event_id, 'tribe-tickets_7898_tribe-tickets-plus-iac-name_1', true );
+
+        // Debugging: log attendee name to browser console
+        echo '<script>console.log("Attendee name: '. $attendee_name .'");</script>';
+
+    } else {
+        // Debugging: log error message to browser console
+        echo '<script>console.log("No attendee info found for event ID '. $event_id .'");</script>';
+    }
+
+}
+}
